@@ -8,8 +8,10 @@ Texture generation using Perlin noise
 """
 class NoiseUtils:
     
-    def __init__(self, imageSize):
-        self.imageSize = imageSize
+    def __init__(self, imageWidth, imageLength):
+        self.imageWidth = imageWidth
+        self.imageLength = imageLength
+        self.imageSize = int((imageWidth * imageLength) ** 0.5)
         self.gradientNumber = 256
 
         self.grid = [[]]
@@ -82,8 +84,8 @@ class NoiseUtils:
 
         noise = {}
         max = min = None
-        for i in range(self.imageSize):
-            for j in range(self.imageSize):
+        for i in range(self.imageWidth):
+            for j in range(self.imageLength):
                 value = texture(i, j)
                 noise[i, j] = value
                 
@@ -93,8 +95,8 @@ class NoiseUtils:
                 if min is None or min > value:
                     min = value
 
-        for i in range(self.imageSize):
-            for j in range(self.imageSize):
+        for i in range(self.imageWidth):
+            for j in range(self.imageLength):
                 self.img[i, j] = (int) ((noise[i, j] - min) / (max - min) * 255 )
 
     def fractalBrownianMotion(self, x, y, func):
@@ -132,14 +134,15 @@ class NoiseUtils:
         return (math.sin(16 * x * frequency + 4 * (n - 0.5)) + 1) * 0.5
 
 if __name__ == "__main__":
-    imageSize = 512
-    noise = NoiseUtils(imageSize)
+    imageWidth = 512
+    imageLength = 256
+    noise = NoiseUtils(imageWidth, imageLength)
     noise.makeTexture(texture = noise.cloud)
 
-    img = Image.new("L", (imageSize, imageSize))
+    img = Image.new("L", (imageWidth, imageLength))
     pixels = img.load()
-    for i in range(0, imageSize):
-       for j in range(0, imageSize):
+    for i in range(0, imageWidth):
+       for j in range(0, imageLength):
             c = noise.img[i, j]
             pixels[i, j] = c
     img.save("temp.png")
